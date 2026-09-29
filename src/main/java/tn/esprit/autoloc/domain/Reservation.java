@@ -33,7 +33,7 @@ public class Reservation {
     private Contrat contrat;
 
     @ManyToOne
-    private Client client;
+    Client client;
 
     @ManyToOne
     private Vehicule vehicule;

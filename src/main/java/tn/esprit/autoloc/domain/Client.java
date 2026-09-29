@@ -39,5 +39,5 @@ public class Client {
     private LocalDate dateInscription;
     // Client 1 ---- * Reservation
     @OneToMany(mappedBy = "client")
-    private Set<Reservation> reservations;
+    Set<Reservation> reservations;
 }

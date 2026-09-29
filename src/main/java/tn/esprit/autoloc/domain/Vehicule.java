@@ -47,8 +47,8 @@ public class Vehicule {
 
 
     // Vehicule 1 ---- * Maintenance
-    @OneToMany(mappedBy = "vehicule")
-    private List<Maintenance> maintenances;
+    //rien ajouter car unidirectionnel
+
 
     //Vehicule* ----1 equipement
     @ManyToMany
