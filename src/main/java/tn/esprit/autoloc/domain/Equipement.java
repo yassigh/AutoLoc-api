@@ -23,5 +23,6 @@ public class Equipement {
     @Column(nullable = false, length = 50)
     private String libelle;
     @ManyToMany(mappedBy = "equipements")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Vehicule> vehicules;
 }

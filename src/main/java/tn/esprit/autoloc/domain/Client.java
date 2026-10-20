@@ -39,5 +39,6 @@ public class Client {
     private LocalDate dateInscription;
     // Client 1 ---- * Reservation
     @OneToMany(mappedBy = "client")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     Set<Reservation> reservations;
 }

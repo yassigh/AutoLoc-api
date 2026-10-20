@@ -1,0 +1,619 @@
+{
+  "info": {
+    "_postman_id": "autoloc-atelier-5-collection",
+    "name": "AutoLoc API - Atelier 5",
+    "description": "Collection complète des requêtes REST pour l'Atelier 5 : Agences, Employés, Véhicules, Équipements, Clients, Réservations, Contrats, Paiements, Maintenances.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Contrats",
+      "item": [
+        {
+          "name": "Créer un contrat (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateSignature\": \"2026-10-20\",\n  \"montantTotal\": 450.00,\n  \"valide\": true\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/contrats", "host": ["{{baseUrl}}"], "path": ["contrats"]}
+          }
+        },
+        {
+          "name": "Créer un contrat avec cascade de paiements (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateSignature\": \"2026-10-20\",\n  \"montantTotal\": 500.00,\n  \"valide\": true,\n  \"paiements\": [\n    {\n      \"montant\": 250.00,\n      \"datePaiement\": \"2026-10-20\",\n      \"modePaiement\": \"CARTE_BANCAIRE\"\n    },\n    {\n      \"montant\": 250.00,\n      \"datePaiement\": \"2026-10-21\",\n      \"modePaiement\": \"VIREMENT\"\n    }\n  ]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/contrats", "host": ["{{baseUrl}}"], "path": ["contrats"]}
+          }
+        },
+        {
+          "name": "Créer un contrat montant négatif (Erreur 400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateSignature\": \"2026-10-20\",\n  \"montantTotal\": -100.00,\n  \"valide\": false\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/contrats", "host": ["{{baseUrl}}"], "path": ["contrats"]}
+          }
+        },
+        {
+          "name": "Lister tous les contrats (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/contrats", "host": ["{{baseUrl}}"], "path": ["contrats"]}
+          }
+        },
+        {
+          "name": "Consulter un contrat par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/contrats/1", "host": ["{{baseUrl}}"], "path": ["contrats", "1"]}
+          }
+        },
+        {
+          "name": "Consulter un contrat inexistant (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/contrats/9999", "host": ["{{baseUrl}}"], "path": ["contrats", "9999"]}
+          }
+        },
+        {
+          "name": "Modifier un contrat (Nominal 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateSignature\": \"2026-10-20\",\n  \"montantTotal\": 550.00,\n  \"valide\": true\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/contrats/1", "host": ["{{baseUrl}}"], "path": ["contrats", "1"]}
+          }
+        },
+        {
+          "name": "Supprimer un contrat (Nominal 204)",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/contrats/1", "host": ["{{baseUrl}}"], "path": ["contrats", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Paiements",
+      "item": [
+        {
+          "name": "Lister tous les paiements (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/paiements", "host": ["{{baseUrl}}"], "path": ["paiements"]}
+          }
+        },
+        {
+          "name": "Consulter un paiement par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/paiements/1", "host": ["{{baseUrl}}"], "path": ["paiements", "1"]}
+          }
+        },
+        {
+          "name": "Consulter un paiement inexistant (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/paiements/9999", "host": ["{{baseUrl}}"], "path": ["paiements", "9999"]}
+          }
+        },
+        {
+          "name": "Créer un paiement (refusé) (Erreur 405 Method Not Allowed)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"montant\": 150.00,\n  \"datePaiement\": \"2026-10-20\",\n  \"modePaiement\": \"ESPECES\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/paiements", "host": ["{{baseUrl}}"], "path": ["paiements"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Agences",
+      "item": [
+        {
+          "name": "Créer une agence (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Agence Tunis Centre\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"12 Avenue Habib Bourguiba\",\n  \"telephone\": \"+21671000111\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/agences", "host": ["{{baseUrl}}"], "path": ["agences"]}
+          }
+        },
+        {
+          "name": "Créer une agence sans nom (Erreur 400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"12 Rue Exemple\",\n  \"telephone\": \"+21671000111\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/agences", "host": ["{{baseUrl}}"], "path": ["agences"]}
+          }
+        },
+        {
+          "name": "Lister toutes les agences (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/agences", "host": ["{{baseUrl}}"], "path": ["agences"]}
+          }
+        },
+        {
+          "name": "Consulter une agence par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/agences/1", "host": ["{{baseUrl}}"], "path": ["agences", "1"]}
+          }
+        },
+        {
+          "name": "Consulter une agence inexistante (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/agences/9999", "host": ["{{baseUrl}}"], "path": ["agences", "9999"]}
+          }
+        },
+        {
+          "name": "Modifier une agence (Nominal 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Agence Tunis Centre - Rénovée\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"12 Avenue Habib Bourguiba\",\n  \"telephone\": \"+21671000999\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/agences/1", "host": ["{{baseUrl}}"], "path": ["agences", "1"]}
+          }
+        },
+        {
+          "name": "Supprimer une agence (Nominal 204)",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/agences/1", "host": ["{{baseUrl}}"], "path": ["agences", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Employés",
+      "item": [
+        {
+          "name": "Créer un employé avec agence imbriquée (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Ben Salah\",\n  \"prenom\": \"Ali\",\n  \"role\": \"GESTIONNAIRE\",\n  \"agence\": {\n    \"idAgence\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/employes", "host": ["{{baseUrl}}"], "path": ["employes"]}
+          }
+        },
+        {
+          "name": "Créer un employé sans nom (Erreur 400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"\",\n  \"prenom\": \"Ali\",\n  \"role\": \"GESTIONNAIRE\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/employes", "host": ["{{baseUrl}}"], "path": ["employes"]}
+          }
+        },
+        {
+          "name": "Lister tous les employés (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/employes", "host": ["{{baseUrl}}"], "path": ["employes"]}
+          }
+        },
+        {
+          "name": "Consulter un employé par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/employes/1", "host": ["{{baseUrl}}"], "path": ["employes", "1"]}
+          }
+        },
+        {
+          "name": "Consulter un employé inexistant (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/employes/9999", "host": ["{{baseUrl}}"], "path": ["employes", "9999"]}
+          }
+        },
+        {
+          "name": "Modifier un employé (Nominal 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Ben Salah\",\n  \"prenom\": \"Ali\",\n  \"role\": \"RESPONSABLE_AGENCE\",\n  \"agence\": {\n    \"idAgence\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/employes/1", "host": ["{{baseUrl}}"], "path": ["employes", "1"]}
+          }
+        },
+        {
+          "name": "Supprimer un employé (Nominal 204)",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/employes/1", "host": ["{{baseUrl}}"], "path": ["employes", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Véhicules",
+      "item": [
+        {
+          "name": "Créer un véhicule (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"220-TN-1234\",\n  \"marque\": \"Renault\",\n  \"modele\": \"Clio 5\",\n  \"categorie\": \"CITADINE\",\n  \"tarifJournalier\": 85.00,\n  \"statut\": \"DISPONIBLE\",\n  \"agence\": {\n    \"idAgence\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/vehicules", "host": ["{{baseUrl}}"], "path": ["vehicules"]}
+          }
+        },
+        {
+          "name": "Créer un véhicule tarif négatif (Erreur 400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"220-TN-9999\",\n  \"marque\": \"Renault\",\n  \"modele\": \"Clio 5\",\n  \"categorie\": \"CITADINE\",\n  \"tarifJournalier\": -50.00,\n  \"statut\": \"DISPONIBLE\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/vehicules", "host": ["{{baseUrl}}"], "path": ["vehicules"]}
+          }
+        },
+        {
+          "name": "Lister tous les véhicules (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/vehicules", "host": ["{{baseUrl}}"], "path": ["vehicules"]}
+          }
+        },
+        {
+          "name": "Consulter un véhicule par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/vehicules/1", "host": ["{{baseUrl}}"], "path": ["vehicules", "1"]}
+          }
+        },
+        {
+          "name": "Consulter un véhicule inexistant (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/vehicules/9999", "host": ["{{baseUrl}}"], "path": ["vehicules", "9999"]}
+          }
+        },
+        {
+          "name": "Modifier un véhicule (Nominal 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"220-TN-1234\",\n  \"marque\": \"Renault\",\n  \"modele\": \"Clio 5\",\n  \"categorie\": \"CITADINE\",\n  \"tarifJournalier\": 95.00,\n  \"statut\": \"LOUE\",\n  \"agence\": {\n    \"idAgence\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/vehicules/1", "host": ["{{baseUrl}}"], "path": ["vehicules", "1"]}
+          }
+        },
+        {
+          "name": "Supprimer un véhicule (Nominal 204)",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/vehicules/1", "host": ["{{baseUrl}}"], "path": ["vehicules", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Équipements",
+      "item": [
+        {
+          "name": "Créer un équipement (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libelle\": \"GPS Navigation HD\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/equipements", "host": ["{{baseUrl}}"], "path": ["equipements"]}
+          }
+        },
+        {
+          "name": "Créer un équipement sans libellé (Erreur 400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libelle\": \"\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/equipements", "host": ["{{baseUrl}}"], "path": ["equipements"]}
+          }
+        },
+        {
+          "name": "Lister tous les équipements (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/equipements", "host": ["{{baseUrl}}"], "path": ["equipements"]}
+          }
+        },
+        {
+          "name": "Consulter un équipement par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/equipements/1", "host": ["{{baseUrl}}"], "path": ["equipements", "1"]}
+          }
+        },
+        {
+          "name": "Consulter un équipement inexistant (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/equipements/9999", "host": ["{{baseUrl}}"], "path": ["equipements", "9999"]}
+          }
+        },
+        {
+          "name": "Modifier un équipement (Nominal 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libelle\": \"GPS Tactile Multimédia\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/equipements/1", "host": ["{{baseUrl}}"], "path": ["equipements", "1"]}
+          }
+        },
+        {
+          "name": "Supprimer un équipement (Nominal 204)",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/equipements/1", "host": ["{{baseUrl}}"], "path": ["equipements", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Clients",
+      "item": [
+        {
+          "name": "Créer un client (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Trabelsi\",\n  \"prenom\": \"Samir\",\n  \"email\": \"samir.trabelsi@example.com\",\n  \"telephone\": \"+21698123456\",\n  \"numPermis\": \"TN-87654321\",\n  \"dateInscription\": \"2026-10-20\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/clients", "host": ["{{baseUrl}}"], "path": ["clients"]}
+          }
+        },
+        {
+          "name": "Créer un client avec nom manquant (Erreur 400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"\",\n  \"prenom\": \"Samir\",\n  \"email\": \"samir@example.com\",\n  \"telephone\": \"+21698123456\",\n  \"numPermis\": \"TN-87654321\",\n  \"dateInscription\": \"2026-10-20\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/clients", "host": ["{{baseUrl}}"], "path": ["clients"]}
+          }
+        },
+        {
+          "name": "Lister tous les clients (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/clients", "host": ["{{baseUrl}}"], "path": ["clients"]}
+          }
+        },
+        {
+          "name": "Consulter un client par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/clients/1", "host": ["{{baseUrl}}"], "path": ["clients", "1"]}
+          }
+        },
+        {
+          "name": "Consulter un client inexistant (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/clients/9999", "host": ["{{baseUrl}}"], "path": ["clients", "9999"]}
+          }
+        },
+        {
+          "name": "Modifier un client (Nominal 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Trabelsi\",\n  \"prenom\": \"Samir\",\n  \"email\": \"samir.modifie@example.com\",\n  \"telephone\": \"+21698999888\",\n  \"numPermis\": \"TN-87654321\",\n  \"dateInscription\": \"2026-10-20\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/clients/1", "host": ["{{baseUrl}}"], "path": ["clients", "1"]}
+          }
+        },
+        {
+          "name": "Supprimer un client (Nominal 204)",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/clients/1", "host": ["{{baseUrl}}"], "path": ["clients", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Réservations",
+      "item": [
+        {
+          "name": "Créer une réservation avec client et véhicule (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateDebut\": \"2026-10-25\",\n  \"dateFin\": \"2026-10-30\",\n  \"statut\": \"CONFIRMEE\",\n  \"client\": {\n    \"idClient\": 1\n  },\n  \"vehicule\": {\n    \"idVehicule\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/reservations", "host": ["{{baseUrl}}"], "path": ["reservations"]}
+          }
+        },
+        {
+          "name": "Créer une réservation avec date fin antérieure (Erreur 400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateDebut\": \"2026-10-30\",\n  \"dateFin\": \"2026-10-25\",\n  \"statut\": \"EN_ATTENTE\",\n  \"client\": {\n    \"idClient\": 1\n  },\n  \"vehicule\": {\n    \"idVehicule\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/reservations", "host": ["{{baseUrl}}"], "path": ["reservations"]}
+          }
+        },
+        {
+          "name": "Lister toutes les réservations (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/reservations", "host": ["{{baseUrl}}"], "path": ["reservations"]}
+          }
+        },
+        {
+          "name": "Consulter une réservation par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/reservations/1", "host": ["{{baseUrl}}"], "path": ["reservations", "1"]}
+          }
+        },
+        {
+          "name": "Consulter une réservation inexistante (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/reservations/9999", "host": ["{{baseUrl}}"], "path": ["reservations", "9999"]}
+          }
+        },
+        {
+          "name": "Modifier une réservation (Nominal 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateDebut\": \"2026-10-25\",\n  \"dateFin\": \"2026-10-31\",\n  \"statut\": \"TERMINEE\",\n  \"client\": {\n    \"idClient\": 1\n  },\n  \"vehicule\": {\n    \"idVehicule\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/reservations/1", "host": ["{{baseUrl}}"], "path": ["reservations", "1"]}
+          }
+        },
+        {
+          "name": "Supprimer une réservation (Nominal 204)",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/reservations/1", "host": ["{{baseUrl}}"], "path": ["reservations", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Maintenances",
+      "item": [
+        {
+          "name": "Créer une maintenance avec véhicule (Nominal 201)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateDebut\": \"2026-11-01\",\n  \"dateFin\": \"2026-11-03\",\n  \"description\": \"Vidange et changement des filtres\",\n  \"vehicule\": {\n    \"idVehicule\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/maintenances", "host": ["{{baseUrl}}"], "path": ["maintenances"]}
+          }
+        },
+        {
+          "name": "Créer une maintenance date fin antérieure (Erreur 400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateDebut\": \"2026-11-05\",\n  \"dateFin\": \"2026-11-01\",\n  \"description\": \"Erreur chronologique\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/maintenances", "host": ["{{baseUrl}}"], "path": ["maintenances"]}
+          }
+        },
+        {
+          "name": "Lister toutes les maintenances (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/maintenances", "host": ["{{baseUrl}}"], "path": ["maintenances"]}
+          }
+        },
+        {
+          "name": "Consulter une maintenance par ID (Nominal 200)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/maintenances/1", "host": ["{{baseUrl}}"], "path": ["maintenances", "1"]}
+          }
+        },
+        {
+          "name": "Consulter une maintenance inexistante (Erreur 404)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/maintenances/9999", "host": ["{{baseUrl}}"], "path": ["maintenances", "9999"]}
+          }
+        },
+        {
+          "name": "Modifier une maintenance (Nominal 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateDebut\": \"2026-11-01\",\n  \"dateFin\": \"2026-11-04\",\n  \"description\": \"Vidange complète et révision freins\",\n  \"vehicule\": {\n    \"idVehicule\": 1\n  }\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/maintenances/1", "host": ["{{baseUrl}}"], "path": ["maintenances", "1"]}
+          }
+        },
+        {
+          "name": "Supprimer une maintenance (Nominal 204)",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/maintenances/1", "host": ["{{baseUrl}}"], "path": ["maintenances", "1"]}
+          }
+        }
+      ]
+    }
+  ]
+}

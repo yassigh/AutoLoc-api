@@ -48,6 +48,7 @@ public class Vehicule {
 
     // Vehicule 1 ---- * Reservation
     @OneToMany(mappedBy = "vehicule", fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Reservation> reservations;
 
     // Vehicule 1 ---- * Maintenance
@@ -55,5 +56,6 @@ public class Vehicule {
 
     // Vehicule * ---- * Equipement
     @ManyToMany(fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Equipement> equipements;
 }
