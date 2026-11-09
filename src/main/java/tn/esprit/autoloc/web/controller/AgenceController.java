@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Agence;
+import tn.esprit.autoloc.dto.request.AgenceRequestDTO;
+import tn.esprit.autoloc.dto.response.AgenceResponseDTO;
 import tn.esprit.autoloc.service.IAgenceService;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class AgenceController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Agence create(@RequestBody Agence agence) {
-        return agenceService.create(agence);
+    public AgenceResponseDTO create(@Valid @RequestBody AgenceRequestDTO dto) {
+        return agenceService.create(dto);
     }
 
     @Operation(summary = "Consulter une agence")
@@ -38,14 +40,14 @@ public class AgenceController {
             @ApiResponse(responseCode = "404", description = "Agence introuvable")
     })
     @GetMapping("/{id}")
-    public Agence findById(@Parameter(description = "Identifiant de l'agence") @PathVariable Long id) {
+    public AgenceResponseDTO findById(@Parameter(description = "Identifiant de l'agence") @PathVariable Long id) {
         return agenceService.findById(id);
     }
 
     @Operation(summary = "Lister toutes les agences")
     @ApiResponse(responseCode = "200", description = "Liste des agences récupérée avec succès")
     @GetMapping
-    public List<Agence> findAll() {
+    public List<AgenceResponseDTO> findAll() {
         return agenceService.findAll();
     }
 
@@ -56,10 +58,10 @@ public class AgenceController {
             @ApiResponse(responseCode = "404", description = "Agence introuvable")
     })
     @PutMapping("/{id}")
-    public Agence update(
+    public AgenceResponseDTO update(
             @Parameter(description = "Identifiant de l'agence") @PathVariable Long id,
-            @RequestBody Agence agence) {
-        return agenceService.update(id, agence);
+            @Valid @RequestBody AgenceRequestDTO dto) {
+        return agenceService.update(id, dto);
     }
 
     @Operation(summary = "Supprimer une agence")

@@ -3,8 +3,13 @@ package tn.esprit.autoloc.service.Impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.autoloc.domain.Maintenance;
+import tn.esprit.autoloc.domain.Vehicule;
+import tn.esprit.autoloc.dto.request.MaintenanceRequestDTO;
+import tn.esprit.autoloc.dto.response.MaintenanceResponseDTO;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
+import tn.esprit.autoloc.mapper.MaintenanceMapper;
 import tn.esprit.autoloc.repository.IMaintenanceRepository;
+import tn.esprit.autoloc.repository.IVehiculeRepository;
 import tn.esprit.autoloc.service.IMaintenanceService;
 
 import java.util.List;
@@ -14,51 +19,61 @@ import java.util.List;
 public class MaintenanceServiceImpl implements IMaintenanceService {
 
     private final IMaintenanceRepository maintenanceRepository;
+    private final IVehiculeRepository vehiculeRepository;
+    private final MaintenanceMapper maintenanceMapper;
 
     @Override
-    public Maintenance create(Maintenance maintenance) {
-        if (maintenance.getIdMaintenance() != null) {
-            throw new IllegalArgumentException(
-                    "Une nouvelle maintenance ne doit pas avoir d'identifiant"
-            );
+    public MaintenanceResponseDTO create(MaintenanceRequestDTO dto) {
+        if (dto.getDateDebut() != null && dto.getDateFin() != null
+                && dto.getDateFin().isBefore(dto.getDateDebut())) {
+            throw new IllegalArgumentException("La date de fin ne peut pas être antérieure à la date de début");
         }
-        if (maintenance.getDateDebut() != null && maintenance.getDateFin() != null
-                && maintenance.getDateFin().isBefore(maintenance.getDateDebut())) {
-            throw new IllegalArgumentException(
-                    "La date de fin ne peut pas être antérieure à la date de début"
-            );
+
+        Maintenance maintenance = maintenanceMapper.toEntity(dto);
+        if (dto.getIdVehicule() != null) {
+            Vehicule vehicule = vehiculeRepository.findById(dto.getIdVehicule())
+                    .orElseThrow(() -> new ResourceNotFoundException("Vehicule", dto.getIdVehicule()));
+            maintenance.setVehicule(vehicule);
         }
-        return maintenanceRepository.save(maintenance);
+
+        Maintenance saved = maintenanceRepository.save(maintenance);
+        return maintenanceMapper.toResponseDTO(saved);
     }
 
     @Override
-    public Maintenance findById(Long id) {
-        return maintenanceRepository.findById(id)
+    public MaintenanceResponseDTO findById(Long id) {
+        Maintenance maintenance = maintenanceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Maintenance", id));
+        return maintenanceMapper.toResponseDTO(maintenance);
     }
 
     @Override
-    public List<Maintenance> findAll() {
-        return maintenanceRepository.findAll();
+    public List<MaintenanceResponseDTO> findAll() {
+        return maintenanceMapper.toResponseDTOList(maintenanceRepository.findAll());
     }
 
     @Override
-    public Maintenance update(Long id, Maintenance maintenance) {
-        Maintenance existante = findById(id);
+    public MaintenanceResponseDTO update(Long id, MaintenanceRequestDTO dto) {
+        Maintenance existante = maintenanceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Maintenance", id));
 
-        if (maintenance.getDateDebut() != null && maintenance.getDateFin() != null
-                && maintenance.getDateFin().isBefore(maintenance.getDateDebut())) {
-            throw new IllegalArgumentException(
-                    "La date de fin ne peut pas être antérieure à la date de début"
-            );
+        if (dto.getDateDebut() != null && dto.getDateFin() != null
+                && dto.getDateFin().isBefore(dto.getDateDebut())) {
+            throw new IllegalArgumentException("La date de fin ne peut pas être antérieure à la date de début");
         }
 
-        existante.setDateDebut(maintenance.getDateDebut());
-        existante.setDateFin(maintenance.getDateFin());
-        existante.setDescription(maintenance.getDescription());
-        existante.setVehicule(maintenance.getVehicule());
+        maintenanceMapper.updateEntityFromDTO(dto, existante);
 
-        return maintenanceRepository.save(existante);
+        if (dto.getIdVehicule() != null) {
+            Vehicule vehicule = vehiculeRepository.findById(dto.getIdVehicule())
+                    .orElseThrow(() -> new ResourceNotFoundException("Vehicule", dto.getIdVehicule()));
+            existante.setVehicule(vehicule);
+        } else {
+            existante.setVehicule(null);
+        }
+
+        Maintenance updated = maintenanceRepository.save(existante);
+        return maintenanceMapper.toResponseDTO(updated);
     }
 
     @Override

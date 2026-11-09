@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Client;
+import tn.esprit.autoloc.dto.request.ClientRequestDTO;
+import tn.esprit.autoloc.dto.response.ClientResponseDTO;
 import tn.esprit.autoloc.service.IClientService;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class ClientController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Client create(@RequestBody Client client) {
-        return clientService.create(client);
+    public ClientResponseDTO create(@Valid @RequestBody ClientRequestDTO dto) {
+        return clientService.create(dto);
     }
 
     @Operation(summary = "Consulter un client")
@@ -38,14 +40,14 @@ public class ClientController {
             @ApiResponse(responseCode = "404", description = "Client introuvable")
     })
     @GetMapping("/{id}")
-    public Client findById(@Parameter(description = "Identifiant du client") @PathVariable Long id) {
+    public ClientResponseDTO findById(@Parameter(description = "Identifiant du client") @PathVariable Long id) {
         return clientService.findById(id);
     }
 
     @Operation(summary = "Lister tous les clients")
     @ApiResponse(responseCode = "200", description = "Liste des clients récupérée avec succès")
     @GetMapping
-    public List<Client> findAll() {
+    public List<ClientResponseDTO> findAll() {
         return clientService.findAll();
     }
 
@@ -56,10 +58,10 @@ public class ClientController {
             @ApiResponse(responseCode = "404", description = "Client introuvable")
     })
     @PutMapping("/{id}")
-    public Client update(
+    public ClientResponseDTO update(
             @Parameter(description = "Identifiant du client") @PathVariable Long id,
-            @RequestBody Client client) {
-        return clientService.update(id, client);
+            @Valid @RequestBody ClientRequestDTO dto) {
+        return clientService.update(id, dto);
     }
 
     @Operation(summary = "Supprimer un client")

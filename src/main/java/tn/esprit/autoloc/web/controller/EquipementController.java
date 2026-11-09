@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Equipement;
+import tn.esprit.autoloc.dto.request.EquipementRequestDTO;
+import tn.esprit.autoloc.dto.response.EquipementResponseDTO;
 import tn.esprit.autoloc.service.IEquipementService;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class EquipementController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Equipement create(@RequestBody Equipement equipement) {
-        return equipementService.create(equipement);
+    public EquipementResponseDTO create(@Valid @RequestBody EquipementRequestDTO dto) {
+        return equipementService.create(dto);
     }
 
     @Operation(summary = "Consulter un équipement")
@@ -38,14 +40,14 @@ public class EquipementController {
             @ApiResponse(responseCode = "404", description = "Équipement introuvable")
     })
     @GetMapping("/{id}")
-    public Equipement findById(@Parameter(description = "Identifiant de l'équipement") @PathVariable Long id) {
+    public EquipementResponseDTO findById(@Parameter(description = "Identifiant de l'équipement") @PathVariable Long id) {
         return equipementService.findById(id);
     }
 
     @Operation(summary = "Lister tous les équipements")
     @ApiResponse(responseCode = "200", description = "Liste des équipements récupérée avec succès")
     @GetMapping
-    public List<Equipement> findAll() {
+    public List<EquipementResponseDTO> findAll() {
         return equipementService.findAll();
     }
 
@@ -56,10 +58,10 @@ public class EquipementController {
             @ApiResponse(responseCode = "404", description = "Équipement introuvable")
     })
     @PutMapping("/{id}")
-    public Equipement update(
+    public EquipementResponseDTO update(
             @Parameter(description = "Identifiant de l'équipement") @PathVariable Long id,
-            @RequestBody Equipement equipement) {
-        return equipementService.update(id, equipement);
+            @Valid @RequestBody EquipementRequestDTO dto) {
+        return equipementService.update(id, dto);
     }
 
     @Operation(summary = "Supprimer un équipement")

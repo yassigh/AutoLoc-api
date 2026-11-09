@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Contrat;
+import tn.esprit.autoloc.dto.request.ContratRequestDTO;
+import tn.esprit.autoloc.dto.response.ContratResponseDTO;
 import tn.esprit.autoloc.service.IContratService;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class ContratController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Contrat create(@RequestBody Contrat contrat) {
-        return contratService.create(contrat);
+    public ContratResponseDTO create(@Valid @RequestBody ContratRequestDTO dto) {
+        return contratService.create(dto);
     }
 
     @Operation(summary = "Consulter un contrat")
@@ -38,14 +40,14 @@ public class ContratController {
             @ApiResponse(responseCode = "404", description = "Contrat introuvable")
     })
     @GetMapping("/{id}")
-    public Contrat findById(@Parameter(description = "Identifiant du contrat") @PathVariable Long id) {
+    public ContratResponseDTO findById(@Parameter(description = "Identifiant du contrat") @PathVariable Long id) {
         return contratService.findById(id);
     }
 
     @Operation(summary = "Lister tous les contrats")
     @ApiResponse(responseCode = "200", description = "Liste des contrats récupérée avec succès")
     @GetMapping
-    public List<Contrat> findAll() {
+    public List<ContratResponseDTO> findAll() {
         return contratService.findAll();
     }
 
@@ -56,10 +58,10 @@ public class ContratController {
             @ApiResponse(responseCode = "404", description = "Contrat introuvable")
     })
     @PutMapping("/{id}")
-    public Contrat update(
+    public ContratResponseDTO update(
             @Parameter(description = "Identifiant du contrat") @PathVariable Long id,
-            @RequestBody Contrat contrat) {
-        return contratService.update(id, contrat);
+            @Valid @RequestBody ContratRequestDTO dto) {
+        return contratService.update(id, dto);
     }
 
     @Operation(summary = "Supprimer un contrat")

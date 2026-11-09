@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Employe;
+import tn.esprit.autoloc.dto.request.EmployeRequestDTO;
+import tn.esprit.autoloc.dto.response.EmployeResponseDTO;
 import tn.esprit.autoloc.service.IEmployeService;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class EmployeController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Employe create(@RequestBody Employe employe) {
-        return employeService.create(employe);
+    public EmployeResponseDTO create(@Valid @RequestBody EmployeRequestDTO dto) {
+        return employeService.create(dto);
     }
 
     @Operation(summary = "Consulter un employé")
@@ -38,14 +40,14 @@ public class EmployeController {
             @ApiResponse(responseCode = "404", description = "Employé introuvable")
     })
     @GetMapping("/{id}")
-    public Employe findById(@Parameter(description = "Identifiant de l'employé") @PathVariable Long id) {
+    public EmployeResponseDTO findById(@Parameter(description = "Identifiant de l'employé") @PathVariable Long id) {
         return employeService.findById(id);
     }
 
     @Operation(summary = "Lister tous les employés")
     @ApiResponse(responseCode = "200", description = "Liste des employés récupérée avec succès")
     @GetMapping
-    public List<Employe> findAll() {
+    public List<EmployeResponseDTO> findAll() {
         return employeService.findAll();
     }
 
@@ -56,10 +58,10 @@ public class EmployeController {
             @ApiResponse(responseCode = "404", description = "Employé introuvable")
     })
     @PutMapping("/{id}")
-    public Employe update(
+    public EmployeResponseDTO update(
             @Parameter(description = "Identifiant de l'employé") @PathVariable Long id,
-            @RequestBody Employe employe) {
-        return employeService.update(id, employe);
+            @Valid @RequestBody EmployeRequestDTO dto) {
+        return employeService.update(id, dto);
     }
 
     @Operation(summary = "Supprimer un employé")

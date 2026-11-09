@@ -3,7 +3,10 @@ package tn.esprit.autoloc.service.Impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.autoloc.domain.Equipement;
+import tn.esprit.autoloc.dto.request.EquipementRequestDTO;
+import tn.esprit.autoloc.dto.response.EquipementResponseDTO;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
+import tn.esprit.autoloc.mapper.EquipementMapper;
 import tn.esprit.autoloc.repository.IEquipementRepository;
 import tn.esprit.autoloc.service.IEquipementService;
 
@@ -14,46 +17,42 @@ import java.util.List;
 public class EquipementServiceImpl implements IEquipementService {
 
     private final IEquipementRepository equipementRepository;
+    private final EquipementMapper equipementMapper;
 
     @Override
-    public Equipement create(Equipement equipement) {
-        if (equipement.getIdEquipement() != null) {
-            throw new IllegalArgumentException(
-                    "Un nouvel équipement ne doit pas avoir d'identifiant"
-            );
+    public EquipementResponseDTO create(EquipementRequestDTO dto) {
+        if (dto.getLibelle() == null || dto.getLibelle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Le libellé de l'équipement est obligatoire");
         }
-        if (equipement.getLibelle() == null || equipement.getLibelle().trim().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Le libellé de l'équipement est obligatoire"
-            );
-        }
-        return equipementRepository.save(equipement);
+        Equipement equipement = equipementMapper.toEntity(dto);
+        Equipement saved = equipementRepository.save(equipement);
+        return equipementMapper.toResponseDTO(saved);
     }
 
     @Override
-    public Equipement findById(Long id) {
-        return equipementRepository.findById(id)
+    public EquipementResponseDTO findById(Long id) {
+        Equipement equipement = equipementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipement", id));
+        return equipementMapper.toResponseDTO(equipement);
     }
 
     @Override
-    public List<Equipement> findAll() {
-        return equipementRepository.findAll();
+    public List<EquipementResponseDTO> findAll() {
+        return equipementMapper.toResponseDTOList(equipementRepository.findAll());
     }
 
     @Override
-    public Equipement update(Long id, Equipement equipement) {
-        Equipement existant = findById(id);
+    public EquipementResponseDTO update(Long id, EquipementRequestDTO dto) {
+        Equipement existant = equipementRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipement", id));
 
-        if (equipement.getLibelle() == null || equipement.getLibelle().trim().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Le libellé de l'équipement est obligatoire"
-            );
+        if (dto.getLibelle() == null || dto.getLibelle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Le libellé de l'équipement est obligatoire");
         }
 
-        existant.setLibelle(equipement.getLibelle());
-
-        return equipementRepository.save(existant);
+        equipementMapper.updateEntityFromDTO(dto, existant);
+        Equipement updated = equipementRepository.save(existant);
+        return equipementMapper.toResponseDTO(updated);
     }
 
     @Override

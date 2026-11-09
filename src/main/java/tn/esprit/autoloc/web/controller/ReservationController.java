@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Reservation;
+import tn.esprit.autoloc.dto.request.ReservationRequestDTO;
+import tn.esprit.autoloc.dto.response.ReservationResponseDTO;
 import tn.esprit.autoloc.service.IReservationService;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class ReservationController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Reservation create(@RequestBody Reservation reservation) {
-        return reservationService.create(reservation);
+    public ReservationResponseDTO create(@Valid @RequestBody ReservationRequestDTO dto) {
+        return reservationService.create(dto);
     }
 
     @Operation(summary = "Consulter une réservation")
@@ -38,14 +40,14 @@ public class ReservationController {
             @ApiResponse(responseCode = "404", description = "Réservation introuvable")
     })
     @GetMapping("/{id}")
-    public Reservation findById(@Parameter(description = "Identifiant de la réservation") @PathVariable Long id) {
+    public ReservationResponseDTO findById(@Parameter(description = "Identifiant de la réservation") @PathVariable Long id) {
         return reservationService.findById(id);
     }
 
     @Operation(summary = "Lister toutes les réservations")
     @ApiResponse(responseCode = "200", description = "Liste des réservations récupérée avec succès")
     @GetMapping
-    public List<Reservation> findAll() {
+    public List<ReservationResponseDTO> findAll() {
         return reservationService.findAll();
     }
 
@@ -56,10 +58,10 @@ public class ReservationController {
             @ApiResponse(responseCode = "404", description = "Réservation introuvable")
     })
     @PutMapping("/{id}")
-    public Reservation update(
+    public ReservationResponseDTO update(
             @Parameter(description = "Identifiant de la réservation") @PathVariable Long id,
-            @RequestBody Reservation reservation) {
-        return reservationService.update(id, reservation);
+            @Valid @RequestBody ReservationRequestDTO dto) {
+        return reservationService.update(id, dto);
     }
 
     @Operation(summary = "Supprimer une réservation")
