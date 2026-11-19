@@ -74,4 +74,21 @@ public class ReservationController {
     public void deleteById(@Parameter(description = "Identifiant de la réservation") @PathVariable Long id) {
         reservationService.deleteById(id);
     }
+
+    @Operation(summary = "Affecter une réservation à un client")
+    @PutMapping("/affecterReservationAClient/{idReservation}/{nom}/{prenom}")
+    public ReservationResponseDTO affecterReservationAClient(
+            @PathVariable Long idReservation,
+            @PathVariable String nom,
+            @PathVariable String prenom) {
+        return reservationService.affecterReservationAClient(idReservation, nom, prenom);
+    }
+
+    @Operation(summary = "Créer une réservation et son contrat associé")
+    @PostMapping("/creerReservationEtContratAssocie")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReservationResponseDTO creerReservationEtContratAssocie(
+            @Valid @RequestBody tn.esprit.autoloc.dto.request.ReservationWithContratRequestDTO requestDTO) {
+        return reservationService.creerReservationEtContratAssocie(requestDTO);
+    }
 }

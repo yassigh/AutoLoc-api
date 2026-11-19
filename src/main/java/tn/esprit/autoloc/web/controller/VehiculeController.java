@@ -74,4 +74,20 @@ public class VehiculeController {
     public void deleteById(@Parameter(description = "Identifiant du véhicule") @PathVariable Long id) {
         vehiculeService.deleteById(id);
     }
+
+    @Operation(summary = "Affecter un véhicule à un équipement")
+    @PutMapping("/affecterVehiculeAEquipement/{idVehicule}/{idEquipement}")
+    public tn.esprit.autoloc.dto.response.VehiculeDTO affecterVehiculeAEquipement(
+            @PathVariable Long idVehicule,
+            @PathVariable Long idEquipement) {
+        return vehiculeService.affecterVehiculeAEquipement(idVehicule, idEquipement);
+    }
+
+    @Operation(summary = "Affecter une maintenance à un véhicule")
+    @PutMapping("/affecterMaintenanceAvehicule/{description}/{immatriculation}")
+    public tn.esprit.autoloc.dto.response.VehiculeDTO affecterMaintenanceAvehicule(
+            @PathVariable String description,
+            @PathVariable String immatriculation) {
+        return vehiculeService.affecterMaintenanceAvehicule(description, immatriculation);
+    }
 }

@@ -74,4 +74,13 @@ public class ContratController {
     public void deleteById(@Parameter(description = "Identifiant du contrat") @PathVariable Long id) {
         contratService.deleteById(id);
     }
+
+    @Operation(summary = "Affecter un contrat à une réservation")
+    @PutMapping("/affecterContratAReservation/{dateSignature}/{dateDebut}/{dateFin}")
+    public tn.esprit.autoloc.dto.response.ContratDTO affecterContratAReservation(
+            @PathVariable @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate dateSignature,
+            @PathVariable @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate dateDebut,
+            @PathVariable @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate dateFin) {
+        return contratService.affecterContratAReservation(dateSignature, dateDebut, dateFin);
+    }
 }

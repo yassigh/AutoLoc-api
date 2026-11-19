@@ -1,15 +1,18 @@
 package tn.esprit.autoloc.service.Impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.autoloc.domain.Client;
 import tn.esprit.autoloc.domain.Contrat;
 import tn.esprit.autoloc.domain.Reservation;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.dto.request.ReservationRequestDTO;
+import tn.esprit.autoloc.dto.request.ReservationWithContratRequestDTO;
 import tn.esprit.autoloc.dto.response.ReservationResponseDTO;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
 import tn.esprit.autoloc.mapper.ReservationMapper;
+import tn.esprit.autoloc.pattern.observer.ReservationObserver;
+import tn.esprit.autoloc.pattern.observer.ReservationSubject;
 import tn.esprit.autoloc.repository.IClientRepository;
 import tn.esprit.autoloc.repository.IContratRepository;
 import tn.esprit.autoloc.repository.IReservationRepository;
@@ -17,16 +20,54 @@ import tn.esprit.autoloc.repository.IVehiculeRepository;
 import tn.esprit.autoloc.service.IReservationService;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
-@RequiredArgsConstructor
-public class ReservationServiceImpl implements IReservationService {
+public class ReservationServiceImpl implements IReservationService, ReservationSubject {
 
     private final IReservationRepository reservationRepository;
     private final IClientRepository clientRepository;
     private final IVehiculeRepository vehiculeRepository;
     private final IContratRepository contratRepository;
     private final ReservationMapper reservationMapper;
+    private final List<ReservationObserver> observers = new CopyOnWriteArrayList<>();
+
+    public ReservationServiceImpl(
+            IReservationRepository reservationRepository,
+            IClientRepository clientRepository,
+            IVehiculeRepository vehiculeRepository,
+            IContratRepository contratRepository,
+            ReservationMapper reservationMapper,
+            List<ReservationObserver> initialObservers
+    ) {
+        this.reservationRepository = reservationRepository;
+        this.clientRepository = clientRepository;
+        this.vehiculeRepository = vehiculeRepository;
+        this.contratRepository = contratRepository;
+        this.reservationMapper = reservationMapper;
+        if (initialObservers != null) {
+            this.observers.addAll(initialObservers);
+        }
+    }
+
+    @Override
+    public void attach(ReservationObserver observer) {
+        if (observer != null && !observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    @Override
+    public void detach(ReservationObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(Reservation reservation) {
+        for (ReservationObserver observer : observers) {
+            observer.update(reservation);
+        }
+    }
 
     @Override
     public ReservationResponseDTO create(ReservationRequestDTO dto) {
@@ -56,6 +97,7 @@ public class ReservationServiceImpl implements IReservationService {
         }
 
         Reservation saved = reservationRepository.save(reservation);
+        notifyObservers(saved);
         return reservationMapper.toResponseDTO(saved);
     }
 
@@ -108,6 +150,7 @@ public class ReservationServiceImpl implements IReservationService {
         }
 
         Reservation updated = reservationRepository.save(existante);
+        notifyObservers(updated);
         return reservationMapper.toResponseDTO(updated);
     }
 
@@ -117,5 +160,32 @@ public class ReservationServiceImpl implements IReservationService {
             throw new ResourceNotFoundException("Reservation", id);
         }
         reservationRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public ReservationResponseDTO affecterReservationAClient(Long idReservation, String nom, String prenom) {
+        Reservation reservation = reservationRepository.findById(idReservation).get();
+        Client client = clientRepository.findByNomAndPrenom(nom, prenom).get();
+        reservation.setClient(client);
+        return reservationMapper.toResponseDTO(reservationRepository.save(reservation));
+    }
+
+    @Override
+    @Transactional
+    public ReservationResponseDTO creerReservationEtContratAssocie(ReservationWithContratRequestDTO requestDTO) {
+        Contrat contrat = new Contrat();
+        contrat.setDateSignature(requestDTO.getDateSignature());
+        contrat.setMontantTotal(requestDTO.getMontantTotal());
+        contrat.setValide(requestDTO.isValide());
+        contratRepository.save(contrat);
+
+        Reservation reservation = new Reservation();
+        reservation.setDateDebut(requestDTO.getDateDebut());
+        reservation.setDateFin(requestDTO.getDateFin());
+        reservation.setStatut(requestDTO.getStatut());
+        reservation.setContrat(contrat);
+
+        return reservationMapper.toResponseDTO(reservationRepository.save(reservation));
     }
 }
